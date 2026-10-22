@@ -71,3 +71,53 @@ ai-bug-analyzer/
 ├── bug_report.md           # Auto-generated markdown report output
 ├── Capture1.PNG            # UI Screenshot (Input interface)
 └── Capture2.PNG            # UI Screenshot (Generated output)
+
+🚀 Getting Started Locally
+Prerequisites
+Python 3.10 or higher installed on your system.
+
+A valid Google Gemini API Key (GOOGLE_API_KEY).
+
+Installation & Setup
+Clone the repository / Navigate to project folder:
+
+cd ai-bug-analyzer
+
+Create and activate a virtual environment:
+python -m venv venv
+# On Windows:
+.\venv\Scripts\Activate
+
+Install dependencies:
+Ensure your requirements.txt includes langgraph, langchain-google-genai, python-dotenv, fastapi, uvicorn, jinja2, and pydantic.
+
+power shell:
+
+pip install -r requirements.txt
+
+Configure Environment Variables:
+Create a .env file in the root directory and add your API key:
+
+Code snippet
+GOOGLE_API_KEY=your_actual_gemini_api_key_here
+
+GOOGLE_API_KEY=your_actual_gemini_api_key_here
+Run the FastAPI Development Server:
+
+PowerShell
+uvicorn main:app --reload
+Access the Web App:
+Open your browser and navigate to:
+👉 http://127.0.0.1:8000
+
+💡 Usage Example
+Input Description:
+
+"When users try to log in with an incorrect password, the page freezes completely instead of showing an error message."
+
+Generated Output: Includes categorized classification (High severity), technical root cause breakdown regarding re-render loops or network interceptors, and a structured markdown log saved instantly to disk.
+
+👤 Author
+Developed with ❤️ by Rabia Shaikh
+
+Aspiring Software Engineer & AI Workflow Enthusiast

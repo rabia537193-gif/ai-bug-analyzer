@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bug Report Analyzer | Professional Studio</title>
+    <!-- Bootstrap 5 & Google Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+        .form-control {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 0.5rem;
+        }
+        .form-control:focus {
+            background-color: #0f172a;
+            border-color: #6366f1;
+            color: #f8fafc;
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #e2e8f0;
+            background-color: #0f172a !important;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold display-5 text-indigo mb-2"><i class="fa-solid fa-bug text-indigo me-2" style="color: #818cf8;"></i>AI Bug Report Analyzer</h1>
+            <p class="text-muted">Transform raw natural language bug descriptions into professional, structured engineering reports using LangGraph & Gemini.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Input Form Section -->
+            <div class="col-lg-8 mb-4">
+                <div class="glass-card p-4 p-md-5">
+                    <form id="bugForm">
+                        <div class="mb-3">
+                            <label for="bugDescription" class="form-label fw-semibold text-light">Enter Bug Description</label>
+                            <textarea class="form-control" id="bugDescription" rows="5" placeholder="e.g., When users click the checkout button on mobile Safari, the app freezes and crashes..." required></textarea>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn btn-custom w-100 py-3 rounded-pill shadow">
+                            <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Analyze & Generate Report</span>
+                            <div id="loadingSpinner" class="spinner-border spinner-border-sm text-light ms-2 d-none" role="status"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Output Result Section -->
+            <div class="col-lg-8 d-none" id="resultSection">
+                <div class="glass-card p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold text-light m-0"><i class="fa-solid fa-file-lines me-2 text-success"></i>Generated Report</h4>
+                        <span class="badge bg-success px-3 py-2 rounded-pill">Saved to bug_report.md</span>
+                    </div>
+                    <hr class="border-secondary">
+                    <pre><code id="reportOutput"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for AJAX handling -->
+    <script>
+        const form = document.getElementById('bugForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultSection = document.getElementById('resultSection');
+        const reportOutput = document.getElementById('reportOutput');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const description = document.getElementById('bugDescription').value.trim();
+            if (!description) return;
+
+            // UI Loading State
+            submitBtn.disabled = true;
+            btnText.textContent = "Processing through LangGraph...";
+            loadingSpinner.classList.remove('d-none');
+            resultSection.classList.add('d-none');
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: description })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    reportOutput.textContent = data.report;
+                    resultSection.classList.remove('d-none');
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (err) {
+                alert('Something went wrong! Make sure the server is running.');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles me-2"></i>Analyze & Generate Report';
+                loadingSpinner.classList.add('d-none');
+            }
+        });
+    </script>
+</body>
+</html>
